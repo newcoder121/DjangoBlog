@@ -1,0 +1,20 @@
+def main():
+    save_status()
+
+
+
+def save_status(from_number, to_number, tstamp, uid, pid, status, result="Ok"):
+    # from_number =
+    cursor = db.cursor()
+    if status == 'call_established':
+        print("INSERT")
+        cursor.execute("INSERT INTO testcallsstatus (fromaddr, toaddr, tstamp, uid,  pid, status, result) VALUES ('%s','%s','%s','%d','%d','%s','%s')" % (
+            from_number, to_number, tstamp, uid, pid, status, result))
+    else:
+        print("Update")
+        if 'MOS-LQO:\t\t' in result:
+            result = result.split("MOS-LQO:\t\t")[1]
+        cursor.execute("UPDATE testcallsstatus SET fromaddr = '%s', toaddr= '%s', tstamp = '%s', uid = '%d',  pid = '%d', status = '%s' , result = '%s' WHERE toaddr = '%s' AND tstamp = '%s'" % (
+            from_number, to_number, tstamp, uid, pid, status, result,  to_number, tstamp))
+    db.commit()
+    cursor.close()
